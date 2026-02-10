@@ -20,53 +20,74 @@
             cursor: pointer;
         }
 
-        /* Starry Background Animation */
-        .stars {
+        /* Twinkling Stars */
+        .star {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
         }
 
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Floating Text Animation */
         #message-container {
             z-index: 1;
             padding: 20px;
-            max-width: 80%;
-            transition: opacity 0.8s ease;
+            max-width: 85%;
+            animation: float 4s ease-in-out infinite;
         }
 
-        .fade-in { opacity: 1; }
-        .fade-out { opacity: 0; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        h2 {
+            font-weight: 300;
+            line-height: 1.5;
+            transition: opacity 0.8s ease;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
 
         button {
             background: transparent;
             border: 2px solid #fb7185;
             color: #fb7185;
-            padding: 15px 30px;
+            padding: 15px 40px;
             font-size: 1.2rem;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 20px;
             font-family: 'Georgia', serif;
+            box-shadow: 0 0 15px rgba(251, 113, 133, 0.2);
         }
 
         button:active {
             background: #fb7185;
             color: white;
-            transform: scale(0.95);
         }
 
-        .heart { color: #fb7185; }
+        .heart { color: #fb7185; font-size: 1.5rem; }
     </style>
 </head>
-<body onclick="nextStep()">
+<body onclick="handleInteraction()">
 
-    <div class="stars" id="stars"></div>
+    <audio id="bgMusic" loop>
+        <source src="https://www.dropbox.com/scl/fi/f7v8k1l8m8e8k7e7e7e7e/nahanapkita.mp3?rlkey=xyz&raw=1" type="audio/mpeg">
+        </audio>
+
+    <div id="stars-container"></div>
 
     <div id="message-container">
-        <h2 id="text-display">Every day, I’m struck by the sheer impossibility of us.</h2>
+        <h2 id="text-display">Every day, I’m struck by the sheer impossibility of us. <br><br> <span style="font-size: 0.8rem; opacity: 0.5;">(Tap to continue)</span></h2>
         <div id="button-container" style="display: none;">
-            <button onclick="sayYes()">Yes, Mahal.</button>
+            <button onclick="sayYes(event)">Yes, Mahal.</button>
         </div>
     </div>
 
@@ -82,45 +103,60 @@
         ];
 
         let currentIndex = 0;
+        let musicStarted = false;
         const textDisplay = document.getElementById('text-display');
         const btnContainer = document.getElementById('button-container');
+        const music = document.getElementById('bgMusic');
+
+        function handleInteraction() {
+            // Start music on first click
+            if (!musicStarted) {
+                music.play().catch(e => console.log("Audio waiting for interaction"));
+                musicStarted = true;
+            }
+            nextStep();
+        }
 
         function nextStep() {
             if (currentIndex < messages.length) {
-                // Fade out
                 textDisplay.style.opacity = 0;
                 
                 setTimeout(() => {
                     textDisplay.textContent = messages[currentIndex];
                     textDisplay.style.opacity = 1;
                     
-                    // If it's the last message (the question), show the button
                     if (currentIndex === messages.length - 1) {
                         btnContainer.style.display = "block";
-                        document.body.onclick = null; // Stop screen clicking
+                        document.body.onclick = null; 
                     }
                     currentIndex++;
                 }, 800);
             }
         }
 
-        function sayYes() {
-            textDisplay.innerHTML = "Yey! See you on 14th <span class='heart'>&lt;3</span>";
+        function sayYes(event) {
+            event.stopPropagation(); // Prevents triggers from background click
+            textDisplay.innerHTML = "Yey! See you on 14th <br><br> <span class='heart'>❤️</span>";
             btnContainer.style.display = "none";
         }
 
-        // Simple star generator
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 100; i++) {
+        // Generate Twinkling Stars
+        const container = document.getElementById('stars-container');
+        for (let i = 0; i < 150; i++) {
             const star = document.createElement('div');
-            star.style.position = 'absolute';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.width = '2px';
-            star.style.height = '2px';
-            star.style.background = 'white';
-            star.style.opacity = Math.random();
-            starsContainer.appendChild(star);
+            star.className = 'star';
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 3;
+            const duration = 2 + Math.random() * 3;
+            
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.setProperty('--duration', `${duration}s`);
+            
+            container.appendChild(star);
         }
     </script>
 </body>

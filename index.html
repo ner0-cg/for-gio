@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Mahal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at center, #0a192f 0%, #020617 100%);
+            color: #e2e8f0;
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* Starry Background Animation */
+        .stars {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        #message-container {
+            z-index: 1;
+            padding: 20px;
+            max-width: 80%;
+            transition: opacity 0.8s ease;
+        }
+
+        .fade-in { opacity: 1; }
+        .fade-out { opacity: 0; }
+
+        button {
+            background: transparent;
+            border: 2px solid #fb7185;
+            color: #fb7185;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        button:active {
+            background: #fb7185;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .heart { color: #fb7185; }
+    </style>
+</head>
+<body onclick="nextStep()">
+
+    <div class="stars" id="stars"></div>
+
+    <div id="message-container">
+        <h2 id="text-display">Every day, I’m struck by the sheer impossibility of us.</h2>
+        <div id="button-container" style="display: none;">
+            <button onclick="sayYes()">Yes, Mahal.</button>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "In a universe that spans trillions of stars and billions of years,",
+            "the odds of our orbits overlapping are practically zero.",
+            "Yet, here we are.",
+            "To spend this life with you is a miracle of cosmic proportions.",
+            "I love you, Gio, with a depth that exceeds the boundaries of space and time,",
+            "and I can't wait to spend every second of my 'forever' showing you why.",
+            "Mahal, will you be my valentine?"
+        ];
+
+        let currentIndex = 0;
+        const textDisplay = document.getElementById('text-display');
+        const btnContainer = document.getElementById('button-container');
+
+        function nextStep() {
+            if (currentIndex < messages.length) {
+                // Fade out
+                textDisplay.style.opacity = 0;
+                
+                setTimeout(() => {
+                    textDisplay.textContent = messages[currentIndex];
+                    textDisplay.style.opacity = 1;
+                    
+                    // If it's the last message (the question), show the button
+                    if (currentIndex === messages.length - 1) {
+                        btnContainer.style.display = "block";
+                        document.body.onclick = null; // Stop screen clicking
+                    }
+                    currentIndex++;
+                }, 800);
+            }
+        }
+
+        function sayYes() {
+            textDisplay.innerHTML = "Yey! See you on 14th <span class='heart'>&lt;3</span>";
+            btnContainer.style.display = "none";
+        }
+
+        // Simple star generator
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.style.position = 'absolute';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = '2px';
+            star.style.height = '2px';
+            star.style.background = 'white';
+            star.style.opacity = Math.random();
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
